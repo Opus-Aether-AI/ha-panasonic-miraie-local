@@ -75,5 +75,57 @@
     "progress": {
       "local_setup": "Finding the AC and verifying local control…"
     }
+  },
+  "services": {
+    "apply": {
+      "name": "Apply settings",
+      "description": "Sets several things at once, in one command, so the AC beeps once. Leave out anything to keep as it is.",
+      "fields": {
+        "hvac_mode": {
+          "name": "Mode",
+          "description": "Off turns the AC off and takes nothing else; any other mode also turns it on."
+        },
+        "temperature": {
+          "name": "Target temperature",
+          "description": "16–30 °C."
+        },
+        "fan_mode": {
+          "name": "Fan speed",
+          "description": "The AC's own fan speed."
+        },
+        "vertical_vane": {
+          "name": "Vertical vane",
+          "description": "0 swings; 1 (level) to 5 (down) holds a position."
+        },
+        "horizontal_vane": {
+          "name": "Horizontal vane",
+          "description": "0 swings; 1 to 5 holds a position."
+        },
+        "powerful": {
+          "name": "Powerful",
+          "description": "On turns Economy and coil cleaning off and the capacity to Auto."
+        },
+        "economy": {
+          "name": "Economy",
+          "description": "On turns Powerful and coil cleaning off and the capacity to Auto."
+        },
+        "coil_cleaning": {
+          "name": "Coil cleaning",
+          "description": "On turns Powerful and Economy off and the capacity to Auto."
+        },
+        "nanoe": {
+          "name": "nanoe",
+          "description": "Panasonic's nanoe ion generator, where the AC has one."
+        },
+        "display": {
+          "name": "Display",
+          "description": "The lights on the indoor unit."
+        },
+        "capacity": {
+          "name": "Capacity",
+          "description": "0 is Auto; otherwise a limit in percent, where the AC supports it."
+        }
+      }
+    }
   }
 }

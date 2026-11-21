@@ -12,7 +12,9 @@ from homeassistant.components.climate import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+import voluptuous as vol
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.const import UnitOfTemperature
 from homeassistant.exceptions import HomeAssistantError
@@ -34,7 +36,7 @@ from .const import (
     KEY_TARGET_TEMP,
 )
 from .coordinator import AcMitmCoordinator
-from .protocol import room_temperature
+from .protocol import APPLY_MODES, ProtocolError, apply_settings, room_temperature
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -69,6 +71,25 @@ async def async_setup_entry(
     coordinator = data["coordinator"]
 
     async_add_entities([AcMitmClimate(coordinator, api, entry)])
+    entity_platform.async_get_current_platform().async_register_entity_service(
+        "apply", APPLY_SCHEMA, "async_apply"
+    )
+
+
+_POSITION = vol.All(vol.Coerce(int), vol.Range(min=0, max=5))
+APPLY_SCHEMA = {
+    vol.Optional("hvac_mode"): vol.In(["off", *APPLY_MODES]),
+    vol.Optional("temperature"): vol.All(vol.Coerce(float), vol.Range(min=16, max=30)),
+    vol.Optional("fan_mode"): vol.In(list(FAN_MODE_MAP)),
+    vol.Optional("vertical_vane"): _POSITION,
+    vol.Optional("horizontal_vane"): _POSITION,
+    vol.Optional("powerful"): cv.boolean,
+    vol.Optional("economy"): cv.boolean,
+    vol.Optional("coil_cleaning"): cv.boolean,
+    vol.Optional("nanoe"): cv.boolean,
+    vol.Optional("display"): cv.boolean,
+    vol.Optional("capacity"): vol.All(vol.Coerce(int), vol.In([0, 40, 55, 70, 80, 90, 100, 110])),
+}
 
 
 class AcMitmClimate(ClimateEntity, CoordinatorEntity[AcMitmCoordinator]):
@@ -227,6 +248,15 @@ class AcMitmClimate(ClimateEntity, CoordinatorEntity[AcMitmCoordinator]):
         }
         vertical, horizontal = positions[str(swing_mode).lower()]
         await self._send(KEY_SWING_VERTICAL, vertical, extra={KEY_SWING_HORIZONTAL: horizontal})
+
+    async def async_apply(self, **fields) -> None:
+        """Set several things at once, in one command, so the AC beeps once (the apply service)."""
+        try:
+            settings = apply_settings(fields)
+        except (ProtocolError, ValueError, TypeError) as err:
+            raise HomeAssistantError(str(err)) from err
+        action, value = next(iter(settings.items()))
+        await self._send(action, value, extra={k: v for k, v in settings.items() if k != action})
 
     async def async_turn_on(self) -> None:
         """Turn the AC on."""

@@ -51,6 +51,21 @@ The integration advises you after a successful local write/readback test. It **d
 - Climate: power, HVAC mode, target temperature, AC fan speed, swing, room temperature.
 - Switches: display, powerful, economy, coil cleaning.
 - Selects: convertible capacity limit, and the vertical and horizontal vane positions (swing, or a fixed position 1–5).
+- Service `ac_mitm.apply`: several settings in one command, so the AC beeps once, for example a whole set of defaults when it turns on:
+
+  ```yaml
+  action: ac_mitm.apply
+  target:
+    entity_id: climate.bedroom_panasonic_ac_local
+  data:
+    hvac_mode: cool
+    temperature: 24
+    fan_mode: auto
+    vertical_vane: 2      # 0 swings, 1 (level) to 5 (down)
+    display: false
+  ```
+
+  Anything left out stays as it is. Powerful, Economy and coil cleaning exclude one another, as their switches do.
 
 Optional feature entities report availability from the device's local state. Feature support varies by model. Historical energy statistics, cloud schedules, firmware updates and unsupported model features are not implemented.
 
