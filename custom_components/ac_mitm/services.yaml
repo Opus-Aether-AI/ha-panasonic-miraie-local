@@ -1,0 +1,52 @@
+apply:
+  target:
+    entity:
+      integration: ac_mitm
+      domain: climate
+  fields:
+    hvac_mode:
+      selector:
+        select:
+          options: ["off", "auto", "cool", "heat", "dry", "fan_only"]
+    temperature:
+      selector:
+        number:
+          min: 16
+          max: 30
+          step: 1
+          unit_of_measurement: "°C"
+    fan_mode:
+      selector:
+        select:
+          options: ["auto", "quiet", "low", "medium", "high"]
+    vertical_vane:
+      selector:
+        number:
+          min: 0
+          max: 5
+          step: 1
+    horizontal_vane:
+      selector:
+        number:
+          min: 0
+          max: 5
+          step: 1
+    powerful:
+      selector:
+        boolean:
+    economy:
+      selector:
+        boolean:
+    coil_cleaning:
+      selector:
+        boolean:
+    nanoe:
+      selector:
+        boolean:
+    display:
+      selector:
+        boolean:
+    capacity:
+      selector:
+        select:
+          options: ["0", "40", "55", "70", "80", "90", "100", "110"]
