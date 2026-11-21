@@ -68,6 +68,8 @@ Existing `ac_mitm` entries and entity unique IDs remain supported. Reconfigure t
 - **Bridge works but native discovery fails:** broadcast replies may be on a different VLAN. Enter the AC IP and use Automatic with a working local VLAN receive path.
 - **Features unavailable:** local keys and a responding device do not guarantee support for every model-specific control.
 - **Check what the AC reports:** download diagnostics from the device page. They show the AC's last status exactly as received, with the local key, IV, identifiers and account details redacted.
+- **A missed reply:** Wi-Fi loses one now and then. The AC keeps its last state, with a `last_answer` attribute on the climate entity saying when it last answered, and the log says so once (a warning, then "answered again"). After 60 seconds without an answer its entities show as unavailable. Every exchange is bounded, so a reply that never comes can't stop polling.
+- **The state doesn't follow the remote, and the room temperature never moves:** some MirAIe Wi-Fi modules keep answering, with a fresh timestamp and signal, while the rest of their status stays exactly as it was, apart from what Home Assistant sends. Changes made on the remote, the display lighting at power-on, and the room reading never arrive. It was seen on two CS-CU-EU18CKY5XFM units (firmware 3.02) from some hours after their internet access was blocked; whether the block is the cause is not yet proven. When the AC has run for 30 minutes with no change of its own, the climate entity gains a `status_unchanged_since` attribute, its room temperature is reported as unknown, and the log warns once. To check: change the target on the remote and see whether Home Assistant follows within 10 seconds.
 
 ## Protocol and development
 

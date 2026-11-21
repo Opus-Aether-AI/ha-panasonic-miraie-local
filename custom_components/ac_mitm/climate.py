@@ -124,6 +124,9 @@ class AcMitmClimate(ClimateEntity, CoordinatorEntity[AcMitmCoordinator]):
 
     @property
     def native_current_temperature(self) -> float | None:
+        # A reading that hasn't moved through half an hour of running isn't a reading
+        if not self.coordinator.health.following:
+            return None
         return room_temperature(self._ac.get(KEY_ROOM_TEMP))
 
     @property
@@ -169,6 +172,9 @@ class AcMitmClimate(ClimateEntity, CoordinatorEntity[AcMitmCoordinator]):
             "economy_mode": self._ac.get(KEY_ECONOMY) == "on",
             "filter_dust_level": self._ac.get(KEY_FILTER_DUST),
             "filter_cleaning_required": self._ac.get(KEY_FILTER_CLEANING),
+            # last_answer while polls are being missed; status_unchanged_since once the status
+            # has stopped following the unit (health.py)
+            **self.coordinator.health.attributes(),
         }
 
     # -- commands --------------------------------------------------------

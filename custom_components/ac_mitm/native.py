@@ -7,7 +7,10 @@ import time
 
 from .api import AcMitmApiError
 from .protocol import Protocol, ProtocolError, command_settings, matches
-from .transport import UdpTransport
+from .transport import REPLY_TIMEOUT, UdpTransport
+
+# One exchange: the reply's own timeout, plus room to open the sockets
+EXCHANGE_TIMEOUT = REPLY_TIMEOUT + 2
 
 
 class NativeApi:
@@ -21,9 +24,12 @@ class NativeApi:
     async def _exchange(self, settings: dict | None = None) -> dict:
         for attempt in range(3):
             try:
-                packets = await self.transport.exchange(
-                    self.protocol.encode(settings), expected=settings
-                )
+                # Bounded: this holds the AC's lock, and the shared UDP port's, so a hang here
+                # would stop every poll and command for both ACs
+                async with asyncio.timeout(EXCHANGE_TIMEOUT):
+                    packets = await self.transport.exchange(
+                        self.protocol.encode(settings), expected=settings
+                    )
             except (OSError, TimeoutError, ValueError) as err:
                 raise AcMitmApiError(
                     "Local UDP transport failed; check device IP and HA network access"

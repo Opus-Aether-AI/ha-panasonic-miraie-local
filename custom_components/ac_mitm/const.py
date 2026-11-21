@@ -10,6 +10,8 @@ DEFAULT_PORT = 8090
 
 # How often the climate entity polls the MITM control API.
 SCAN_INTERVAL = 10
+# The longest one poll may take, retries included, before it counts as missed.
+POLL_TIMEOUT = 15
 
 # Payload keys used by the Panasonic Mirae MQTT protocol.
 KEY_POWER = "ps"
