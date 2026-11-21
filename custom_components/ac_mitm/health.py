@@ -31,6 +31,13 @@ def settled(status: dict) -> dict:
     return {key: value for key, value in status.items() if key not in VOLATILE}
 
 
+def minute(when: float | None) -> datetime | None:
+    """When, to the minute (UTC): the heartbeat sensor's value, so it changes once a minute."""
+    if when is None:
+        return None
+    return datetime.fromtimestamp(when - when % 60, timezone.utc)
+
+
 def iso(when: float) -> str:
     return datetime.fromtimestamp(when, timezone.utc).isoformat(timespec="seconds")
 
