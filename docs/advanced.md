@@ -44,6 +44,8 @@ Create an outbound **internet/WAN-only** block for the AC, covering IPv4 and IPv
 
 Do not use a device pause/disconnect feature that also blocks LAN traffic. An existing proxy or relay can provide another cloud route; remove it if you want complete isolation. Vendor apps and cloud-dependent features may stop working.
 
+On at least one model the AC's own status also stops following the unit once its internet is blocked: the room temperature freezes, and changes made on the IR remote no longer show in Home Assistant. Commands from Home Assistant still work and read back correctly. See [a stand-in for MirAIe's broker](standin.md).
+
 The integration advises you after a successful local write/readback test. It **does not configure your firewall or claim to detect a WAN block**. If you apply a block during setup, the final local test checks that the local path still works. Automatic discovery and status parsing do not by themselves prove that internet access is blocked.
 
 ## Entities and controls
